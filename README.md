@@ -10,7 +10,7 @@ System that transforms any website into RSS/Atom feeds using YAML configuration 
 
 > Look at `sites/hacker-news.yaml` as a reference. Create a new YAML config in `sites/` that generates an RSS feed from `https://example.com/blog`. Fetch the page, inspect the HTML structure, identify the repeating item elements and the selectors for title, link, date, and summary, then write the YAML with the appropriate transforms.
 
-The agent will inspect the target site's HTML structure, write the appropriate CSS/XPath selectors, and set up any transforms (date parsing, URL resolution, etc.) needed. Commit the new YAML, and the GitHub Actions workflow will start generating feeds automatically every 6 hours.
+Hopefully, the agent will inspect the target site's HTML structure, write the appropriate CSS/XPath selectors, and set up any transforms (date parsing, URL resolution, etc.) needed. Commit the new YAML, and the GitHub Actions workflow will start generating feeds automatically every 6 hours.
 
 You can also run it locally to test before pushing — see the Usage section below.
 
