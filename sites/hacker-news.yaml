@@ -1,0 +1,41 @@
+feed:
+  title: "Hacker News"
+  link: "https://news.ycombinator.com"
+  description: "Links for the intellectually curious"
+  language: "en"
+
+source:
+  url: "https://news.ycombinator.com"
+  headers:
+    User-Agent: "risos/1.0"
+
+selectors:
+  item_list:
+    css: "tr.athing"
+    include_siblings: 1
+
+  fields:
+    title:
+      css: ".titleline > a"
+      attribute: "text"
+    link:
+      css: ".titleline > a"
+      attribute: "href"
+    description:
+      css: ".score"
+      attribute: "text"
+      default: "0 points"
+    pubDate:
+      css: ".age"
+      attribute: "title"
+      transforms:
+        - type: regex
+          pattern: "^(\\S+)"
+        - type: date_parse
+    guid:
+      css: ".titleline > a"
+      attribute: "href"
+    author:
+      css: ".hnuser"
+      attribute: "text"
+      default: "unknown"
