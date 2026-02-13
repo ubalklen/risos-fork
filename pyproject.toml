@@ -1,0 +1,41 @@
+[project]
+name = "risos"
+version = "0.1.0"
+description = "Universal RSS/Atom feed generator from YAML site configs"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "feedgen>=1.0.0",
+    "httpx>=0.27",
+    "beautifulsoup4>=4.12",
+    "lxml>=5.0",
+    "pyyaml>=6.0",
+    "pydantic>=2.0",
+    "python-dateutil>=2.9",
+    "babel>=2.16",
+    "typer>=0.15",
+]
+
+[project.scripts]
+risos = "risos.__main__:app"
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0",
+    "ruff>=0.8",
+    "pytest-httpx>=0.35",
+    "ty>=0.0.1a7",
+]
+
+[tool.ruff]
+line-length = 99
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B", "SIM"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[build-system]
+requires = ["uv_build>=0.9.17,<0.10.0"]
+build-backend = "uv_build"
