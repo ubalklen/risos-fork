@@ -1,0 +1,34 @@
+feed:
+  title: "Glenn Greenwald – Folha de S.Paulo"
+  link: "https://www1.folha.uol.com.br/colunas/glenn-greenwald/"
+  description: "Coluna de Glenn Greenwald na Folha de S.Paulo"
+  language: "pt-br"
+
+source:
+  url: "https://www1.folha.uol.com.br/colunas/glenn-greenwald/"
+  headers:
+    User-Agent: "risos/1.0"
+
+selectors:
+  item_list:
+    css: "div.c-headline--opinion, div.c-headline--newslist"
+
+  fields:
+    title:
+      css: "h2.c-headline__title"
+      attribute: "text"
+    link:
+      css: "a.c-headline__url"
+      attribute: "href"
+    description:
+      css: "p.c-headline__standfirst"
+      attribute: "text"
+      default: ""
+    pubDate:
+      css: "time.c-headline__dateline"
+      attribute: "datetime"
+      transforms:
+        - type: date_parse
+    guid:
+      css: "a.c-headline__url"
+      attribute: "href"
