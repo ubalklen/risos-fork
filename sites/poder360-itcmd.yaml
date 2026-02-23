@@ -1,0 +1,71 @@
+feed:
+  title: "Poder360 – ITCMD"
+  link: "https://www.poder360.com.br/tag/itcmd/"
+  description: "Notícias sobre ITCMD no Poder360"
+  language: "pt-br"
+
+source:
+  url: "https://www.poder360.com.br/tag/itcmd/"
+  headers:
+    User-Agent: "risos/1.0"
+
+selectors:
+  item_list:
+    css: "ul.archive-list__list > li"
+
+  fields:
+    title:
+      css: "h2.archive-list__title-2 > a"
+      attribute: "text"
+    link:
+      css: "h2.archive-list__title-2 > a"
+      attribute: "href"
+    description:
+      css: "div.archive-list__text > p"
+      attribute: "text"
+      default: ""
+    pubDate:
+      css: "span.archive-list__date"
+      attribute: "text"
+      transforms:
+        - type: replace
+          old: ".jan."
+          new: ".01."
+        - type: replace
+          old: ".fev."
+          new: ".02."
+        - type: replace
+          old: ".mar."
+          new: ".03."
+        - type: replace
+          old: ".abr."
+          new: ".04."
+        - type: replace
+          old: ".mai."
+          new: ".05."
+        - type: replace
+          old: ".jun."
+          new: ".06."
+        - type: replace
+          old: ".jul."
+          new: ".07."
+        - type: replace
+          old: ".ago."
+          new: ".08."
+        - type: replace
+          old: ".set."
+          new: ".09."
+        - type: replace
+          old: ".out."
+          new: ".10."
+        - type: replace
+          old: ".nov."
+          new: ".11."
+        - type: replace
+          old: ".dez."
+          new: ".12."
+        - type: date_parse
+          format: "%d.%m.%Y"
+    guid:
+      css: "h2.archive-list__title-2 > a"
+      attribute: "href"
