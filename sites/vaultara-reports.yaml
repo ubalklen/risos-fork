@@ -1,0 +1,36 @@
+feed:
+  title: "Vaultara Reports"
+  link: "https://vaultara.co/reports"
+  description: "Daily geopolitical and technology intelligence briefings"
+  language: "en"
+
+source:
+  url: "https://vaultara.co/reports"
+  headers:
+    User-Agent: "risos/1.0"
+
+selectors:
+  item_list:
+    css: "main a.group"
+
+  fields:
+    title:
+      css: "span.font-medium"
+      attribute: "text"
+    link:
+      xpath: "self::a"
+      attribute: "href"
+      transforms:
+        - type: absolute_url
+          base_url: "https://vaultara.co"
+    pubDate:
+      css: "span.opacity-50"
+      attribute: "text"
+      transforms:
+        - type: date_parse
+    guid:
+      xpath: "self::a"
+      attribute: "href"
+      transforms:
+        - type: absolute_url
+          base_url: "https://vaultara.co"
