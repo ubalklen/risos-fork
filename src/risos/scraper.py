@@ -30,7 +30,7 @@ def _select_elements(container: Tag, css: str | None, xpath: str | None) -> list
         results: list[Tag] = []
         for el in lxml_results:
             text = lxml_html.tostring(el, encoding="unicode")
-            parsed = BeautifulSoup(text, "lxml")
+            parsed = BeautifulSoup(text, "html.parser")
             tag = parsed.find()
             if tag and isinstance(tag, Tag):
                 results.append(tag)
