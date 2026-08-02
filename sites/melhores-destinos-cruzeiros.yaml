@@ -1,0 +1,33 @@
+feed:
+  title: "Melhores Destinos - Cruzeiros"
+  link: "https://www.melhoresdestinos.com.br/category/cruzeiros"
+  description: "Noticias e dicas de cruzeiros do Melhores Destinos"
+  language: "pt-br"
+
+source:
+  url: "https://www.melhoresdestinos.com.br/category/cruzeiros"
+  headers:
+    User-Agent: "risos/1.0"
+
+selectors:
+  item_list:
+    css: ".lista-de-artigos > article"
+
+  fields:
+    title:
+      css: "h2 > a"
+      attribute: "text"
+    link:
+      css: "h2 > a"
+      attribute: "href"
+    description:
+      css: "p"
+      attribute: "text"
+      default: ""
+    guid:
+      css: "h2 > a"
+      attribute: "href"
+    author:
+      css: ".author > a"
+      attribute: "text"
+      default: "Melhores Destinos"
