@@ -1,0 +1,34 @@
+feed:
+  title: "Escolha a Escola - Folha de S.Paulo"
+  link: "https://www1.folha.uol.com.br/especial/2019/escolha-a-escola/"
+  description: "Noticias da serie Escolha a Escola da Folha de S.Paulo"
+  language: "pt-br"
+
+source:
+  url: "https://www1.folha.uol.com.br/especial/2019/escolha-a-escola/"
+  headers:
+    User-Agent: "risos/1.0"
+
+selectors:
+  item_list:
+    css: "div.c-main-headline, div.c-headline:not(.c-headline-thumb)"
+
+  fields:
+    title:
+      css: "h2.c-main-headline__title, h2.c-headline__title"
+      attribute: "text"
+    link:
+      css: "a.c-main-headline__url, a.c-headline__url"
+      attribute: "href"
+    description:
+      css: "p.c-main-headline__standfirst, p.c-headline__standfirst"
+      attribute: "text"
+      default: ""
+    pubDate:
+      css: "time.c-headline__dateline"
+      attribute: "datetime"
+      transforms:
+        - type: date_parse
+    guid:
+      css: "a.c-main-headline__url, a.c-headline__url"
+      attribute: "href"
