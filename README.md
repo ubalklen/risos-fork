@@ -20,6 +20,14 @@ You can also run it locally to test before pushing — see the Usage section bel
 uv sync
 ```
 
+For sources that require a rendered browser page, install the optional browser dependency
+and Google Chrome:
+
+```bash
+uv sync --frozen --extra browser
+uv run --frozen --extra browser patchright install chrome
+```
+
 ## Usage
 
 Process all site configs:
@@ -73,6 +81,38 @@ selectors:
       default: null           # Fallback value if not found
       transforms: []          # List of transforms to apply
 ```
+
+### Browser Sources
+
+Sources such as ConJur can require a JavaScript security check before displaying articles.
+Enable browser fetching for that source:
+
+```yaml
+source:
+  url: "https://conjur.com.br/assinaturas/lenio-luiz-streck-2/"
+  browser:
+    wait_for: ".posts-assinados-item"
+    timeout_ms: 90000
+    headless: false
+```
+
+The browser fetcher uses Patchright with native Chrome settings and a dedicated persistent
+profile at `~/.risos/chrome-profile`. It does not use your default Chrome profile, inject
+custom headers, or override the user agent. HTTP sources continue using `source.headers`;
+browser sources leave headers to Chrome. An initial HTTP error is not sufficient to reject
+the page: the fetcher waits for the configured article selector before extracting the HTML.
+If the selector does not appear, generation fails without writing a challenge page as a feed.
+
+Generate the ConJur feed locally:
+
+```bash
+uv run --frozen --extra browser risos generate --site sites/conjur-lenio-streck.yaml
+```
+
+Chrome opens visibly on desktop. On Linux without a display, use `xvfb-run -a` before the
+command. The publishing workflow installs Chrome and uses this virtual display. Site security
+can treat hosted runners differently from your local connection; a failed ConJur generation
+stops publication instead of deploying a missing feed.
 
 ## Available Transforms
 

@@ -1,8 +1,9 @@
 from __future__ import annotations
 
+from pathlib import Path
 from typing import Literal
 
-from pydantic import BaseModel, model_validator
+from pydantic import BaseModel, Field, model_validator
 
 
 class FeedMeta(BaseModel):
@@ -12,9 +13,17 @@ class FeedMeta(BaseModel):
     language: str = "en"
 
 
+class BrowserConfig(BaseModel):
+    wait_for: str = Field(min_length=1)
+    timeout_ms: int = Field(default=90_000, gt=0)
+    headless: bool = False
+    profile_dir: Path = Field(default_factory=lambda: Path.home() / ".risos" / "chrome-profile")
+
+
 class SourceConfig(BaseModel):
     url: str
     headers: dict[str, str] = {}
+    browser: BrowserConfig | None = None
 
 
 class Transform(BaseModel):

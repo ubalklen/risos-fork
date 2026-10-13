@@ -4,6 +4,7 @@ import pytest
 import yaml
 
 from risos.models import (
+    BrowserConfig,
     FieldSelector,
     ItemListSelector,
     SelectorsConfig,
@@ -105,6 +106,25 @@ def test_source_config_default_headers():
 
     sc = SourceConfig(url="https://example.com")
     assert sc.headers == {}
+    assert sc.browser is None
+
+
+def test_browser_config_defaults():
+    config = BrowserConfig(wait_for=".item")
+    assert config.headless is False
+    assert config.timeout_ms == 90_000
+    assert config.profile_dir.name == "chrome-profile"
+
+
+@pytest.mark.parametrize("timeout_ms", [0, -1])
+def test_browser_config_rejects_invalid_timeout(timeout_ms):
+    with pytest.raises(ValueError):
+        BrowserConfig(wait_for=".item", timeout_ms=timeout_ms)
+
+
+def test_browser_config_requires_wait_selector():
+    with pytest.raises(ValueError):
+        BrowserConfig(wait_for="")
 
 
 def test_hacker_news_yaml(hacker_news_config):

@@ -6,8 +6,8 @@ feed:
 
 source:
   url: "https://conjur.com.br/assinaturas/lenio-luiz-streck-2/"
-  headers:
-    User-Agent: "risos/1.0"
+  browser:
+    wait_for: ".posts-assinados-item"
 
 selectors:
   item_list:

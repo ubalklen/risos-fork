@@ -1,11 +1,95 @@
 from __future__ import annotations
 
+import sys
+from types import SimpleNamespace
+from unittest.mock import MagicMock
+
 import httpx
 import pytest
 import yaml
 
-from risos.models import SiteConfig
+from risos.models import BrowserConfig, SiteConfig, SourceConfig
 from risos.scraper import extract_items, fetch_page
+
+
+@pytest.fixture
+def browser_runtime(monkeypatch, tmp_path):
+    factory = MagicMock()
+    monkeypatch.setitem(
+        sys.modules, "patchright.sync_api", SimpleNamespace(sync_playwright=factory)
+    )
+    playwright = factory.return_value.__enter__.return_value
+    context = playwright.chromium.launch_persistent_context.return_value
+    context.pages = []
+    page = context.new_page.return_value
+    page.goto.return_value.status = 403
+    page.content.return_value = '<html><div class="item">Article</div></html>'
+    source = SourceConfig(
+        url="https://example.com",
+        headers={"User-Agent": "risos/1.0"},
+        browser=BrowserConfig(wait_for=".item", profile_dir=tmp_path / "chrome-profile"),
+    )
+    return source, playwright, context, page
+
+
+def test_fetch_browser_waits_for_articles_after_initial_403(browser_runtime, httpx_mock):
+    source, playwright, context, page = browser_runtime
+
+    assert "Article" in fetch_page(source)
+
+    playwright.chromium.launch_persistent_context.assert_called_once_with(
+        user_data_dir=str(source.browser.profile_dir),
+        channel="chrome",
+        headless=False,
+        no_viewport=True,
+        timeout=90_000,
+    )
+    page.goto.assert_called_once_with(source.url, wait_until="domcontentloaded", timeout=90_000)
+    page.locator.assert_called_once_with(".item")
+    page.locator.return_value.first.wait_for.assert_called_once_with(
+        state="attached", timeout=90_000
+    )
+    context.close.assert_called_once_with()
+    assert httpx_mock.get_requests() == []
+
+
+def test_fetch_browser_closes_context_on_wait_failure(browser_runtime):
+    source, _, context, page = browser_runtime
+    page.locator.return_value.first.wait_for.side_effect = TimeoutError("Challenge unresolved")
+
+    with pytest.raises(TimeoutError, match="Challenge unresolved"):
+        fetch_page(source)
+
+    page.content.assert_not_called()
+    context.close.assert_called_once_with()
+
+
+def test_fetch_browser_closes_context_on_navigation_failure(browser_runtime):
+    source, _, context, page = browser_runtime
+    page.goto.side_effect = RuntimeError("Navigation failed")
+
+    with pytest.raises(RuntimeError, match="Navigation failed"):
+        fetch_page(source)
+
+    context.close.assert_called_once_with()
+
+
+def test_fetch_browser_reuses_initial_page(browser_runtime):
+    source, _, context, page = browser_runtime
+    context.pages = [page]
+
+    assert "Article" in fetch_page(source)
+
+    context.new_page.assert_not_called()
+    context.close.assert_called_once_with()
+
+
+def test_fetch_browser_missing_dependency(monkeypatch):
+    monkeypatch.setitem(sys.modules, "patchright.sync_api", None)
+    source = SourceConfig(url="https://example.com", browser=BrowserConfig(wait_for=".item"))
+
+    with pytest.raises(RuntimeError, match="uv sync --extra browser"):
+        fetch_page(source)
 
 
 def test_fetch_page_success(httpx_mock):
