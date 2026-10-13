@@ -1,0 +1,34 @@
+name: Check ConJur native Chrome access
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/conjur-browser-comparison.yml"
+      - "pyproject.toml"
+      - "scripts/compare_conjur_browsers.py"
+      - "sites/conjur-lenio-streck.yaml"
+      - "uv.lock"
+
+permissions:
+  contents: read
+
+jobs:
+  compare-browsers:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v5
+        with:
+          version: "latest"
+
+      - run: uv sync --locked --group browser-test
+
+      - name: Install native Chrome
+        run: uv run --no-sync patchright install --with-deps chrome
+
+      - name: Check ConJur articles with a fresh profile
+        run: xvfb-run -a uv run --no-sync python scripts/compare_conjur_browsers.py sites/conjur-lenio-streck.yaml --native-chrome
