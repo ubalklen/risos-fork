@@ -1,0 +1,32 @@
+name: Test ConJur with Playwright
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/conjur-playwright.yml"
+      - "pyproject.toml"
+      - "scripts/check_conjur_playwright.py"
+      - "sites/conjur-lenio-streck.yaml"
+      - "uv.lock"
+
+permissions:
+  contents: read
+
+jobs:
+  check-conjur:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v5
+        with:
+          version: "latest"
+
+      - run: uv sync --group browser-test
+
+      - run: uv run playwright install --with-deps chromium
+
+      - run: uv run --group browser-test python scripts/check_conjur_playwright.py sites/conjur-lenio-streck.yaml

@@ -26,6 +26,9 @@ dev = [
     "pytest-httpx>=0.35",
     "ty>=0.0.1a7",
 ]
+browser-test = [
+    "playwright>=1.55",
+]
 
 [tool.ruff]
 line-length = 99
