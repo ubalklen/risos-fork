@@ -1,0 +1,47 @@
+name: Test ConJur with HTTPX session
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/conjur-httpx.yml"
+      - "scripts/check_conjur_httpx.py"
+      - "src/risos/httpx_session.py"
+      - "tests/test_httpx_session.py"
+      - "sites/conjur-lenio-streck.yaml"
+      - "pyproject.toml"
+      - "uv.lock"
+
+permissions:
+  contents: read
+
+jobs:
+  check-httpx:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v5
+        with:
+          version: "latest"
+
+      - run: uv sync --locked --extra browser
+
+      - name: Install native Chrome
+        run: uv run --no-sync patchright install --with-deps chrome
+
+      - name: Generate ConJur feed through HTTPX after session validation
+        run: xvfb-run -a uv run --no-sync python scripts/check_conjur_httpx.py sites/conjur-lenio-streck.yaml --browser-session --output-dir httpx-output
+
+      - name: Verify generated feed
+        run: test -s httpx-output/conjur-lenio-streck.rss.xml
+
+      - name: Upload generated feeds
+        uses: actions/upload-artifact@v4
+        with:
+          name: conjur-httpx-feeds
+          path: httpx-output/*.xml
+          if-no-files-found: error

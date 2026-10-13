@@ -114,6 +114,26 @@ command. The publishing workflow installs Chrome and uses this virtual display. 
 can treat hosted runners differently from your local connection; a failed ConJur generation
 stops publication instead of deploying a missing feed.
 
+### Local HTTPX Session Test
+
+ConJur was tested locally with HTTPX over HTTP/1.1 and HTTP/2. Fresh HTTPX sessions,
+including browser-style headers, received a Cloudflare challenge. After validation in
+the dedicated Chrome profile, HTTPX received HTTP 200 and the article list using the
+verification cookie and the same user agent.
+
+To reproduce that test and generate RSS and Atom from the HTTPX response:
+
+```bash
+uv run --frozen --extra browser python scripts/check_conjur_httpx.py sites/conjur-lenio-streck.yaml --browser-session --output-dir output
+```
+
+Without `--browser-session`, the script tests HTTPX alone and does not open Chrome.
+With the flag, Chrome is still required to establish the session first. Only the
+`cf_clearance` verification cookie is passed to HTTPX in memory; login cookies are
+not exported, and the default Chrome profile is never used. The script refuses to
+generate feeds on HTTP errors or when no articles are extracted. This local test
+does not change the publishing workflow or demonstrate access from GitHub-hosted runners.
+
 ## Available Transforms
 
 | Type | Parameters | Description |
