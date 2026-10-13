@@ -1,0 +1,45 @@
+feed:
+  title: "Capital Aberto - Regulação"
+  link: "https://capitalaberto.com.br/regulacao"
+  description: "Artigos de Regulação sobre ITCMD, herança, sucessão e temas relacionados"
+  language: "pt-br"
+
+source:
+  url: "https://capitalaberto.com.br/regulacao"
+  headers:
+    User-Agent: "risos/1.0"
+
+selectors:
+  item_list:
+    xpath: >-
+      //article[
+        (.//h2 | .//*[@data-slot='card-title'])[
+          contains(translate(string(.), 'ABCDEFGHIJKLMNOPQRSTUVWXYZÁÉÍÓÚÂÊÔÃÕÇ', 'abcdefghijklmnopqrstuvwxyzáéíóúâêôãõç'), 'itcmd')
+          or contains(translate(string(.), 'ABCDEFGHIJKLMNOPQRSTUVWXYZÁÉÍÓÚÂÊÔÃÕÇ', 'abcdefghijklmnopqrstuvwxyzáéíóúâêôãõç'), 'herança')
+          or contains(translate(string(.), 'ABCDEFGHIJKLMNOPQRSTUVWXYZÁÉÍÓÚÂÊÔÃÕÇ', 'abcdefghijklmnopqrstuvwxyzáéíóúâêôãõç'), 'sucessão')
+          or contains(translate(string(.), 'ABCDEFGHIJKLMNOPQRSTUVWXYZÁÉÍÓÚÂÊÔÃÕÇ', 'abcdefghijklmnopqrstuvwxyzáéíóúâêôãõç'), 'sucessório')
+          or contains(translate(string(.), 'ABCDEFGHIJKLMNOPQRSTUVWXYZÁÉÍÓÚÂÊÔÃÕÇ', 'abcdefghijklmnopqrstuvwxyzáéíóúâêôãõç'), 'inventário')
+          or contains(translate(string(.), 'ABCDEFGHIJKLMNOPQRSTUVWXYZÁÉÍÓÚÂÊÔÃÕÇ', 'abcdefghijklmnopqrstuvwxyzáéíóúâêôãõç'), 'partilha')
+          or contains(translate(string(.), 'ABCDEFGHIJKLMNOPQRSTUVWXYZÁÉÍÓÚÂÊÔÃÕÇ', 'abcdefghijklmnopqrstuvwxyzáéíóúâêôãõç'), 'testamento')
+          or contains(translate(string(.), 'ABCDEFGHIJKLMNOPQRSTUVWXYZÁÉÍÓÚÂÊÔÃÕÇ', 'abcdefghijklmnopqrstuvwxyzáéíóúâêôãõç'), 'doação')
+          or contains(translate(string(.), 'ABCDEFGHIJKLMNOPQRSTUVWXYZÁÉÍÓÚÂÊÔÃÕÇ', 'abcdefghijklmnopqrstuvwxyzáéíóúâêôãõç'), 'usufruto')
+          or contains(translate(string(.), 'ABCDEFGHIJKLMNOPQRSTUVWXYZÁÉÍÓÚÂÊÔÃÕÇ', 'abcdefghijklmnopqrstuvwxyzáéíóúâêôãõç'), 'holding')
+        ]
+      ]
+
+  fields:
+    title:
+      css: "h2, [data-slot='card-title'] a"
+      attribute: "text"
+    link:
+      xpath: "(.//h2/ancestor::a[1] | .//*[@data-slot='card-title']//a)[1]"
+      attribute: "href"
+      transforms:
+        - type: absolute_url
+          base_url: "https://capitalaberto.com.br"
+    guid:
+      xpath: "(.//h2/ancestor::a[1] | .//*[@data-slot='card-title']//a)[1]"
+      attribute: "href"
+      transforms:
+        - type: absolute_url
+          base_url: "https://capitalaberto.com.br"
