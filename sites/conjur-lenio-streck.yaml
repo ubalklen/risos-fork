@@ -1,31 +1,31 @@
 feed:
   title: "Lenio Luiz Streck – Consultor Jurídico"
-  link: "https://www.conjur.com.br/author/lenio-luiz-streck/"
+  link: "https://conjur.com.br/assinaturas/lenio-luiz-streck-2/"
   description: "Coluna de Lenio Luiz Streck no Consultor Jurídico"
   language: "pt-br"
 
 source:
-  url: "https://www.conjur.com.br/author/lenio-luiz-streck/"
+  url: "https://conjur.com.br/assinaturas/lenio-luiz-streck-2/"
   headers:
     User-Agent: "risos/1.0"
 
 selectors:
   item_list:
-    css: "article"
+    css: ".posts-assinados-item"
 
   fields:
     title:
-      css: "h2"
+      css: ".posts-assinados-titulo"
       attribute: "text"
     link:
-      css: "div.text > a"
+      css: ".posts-assinados-titulo > a"
       attribute: "href"
     description:
-      css: "p"
+      css: ".posts-assinados-excerpt"
       attribute: "text"
       default: ""
     pubDate:
-      css: "div.text > a"
+      css: ".posts-assinados-titulo > a"
       attribute: "href"
       transforms:
         - type: regex
@@ -68,5 +68,5 @@ selectors:
           new: "-12-"
         - type: date_parse
     guid:
-      css: "div.text > a"
+      css: ".posts-assinados-titulo > a"
       attribute: "href"
