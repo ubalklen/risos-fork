@@ -14,45 +14,11 @@ logger = logging.getLogger(__name__)
 
 def fetch_page(source: SourceConfig) -> str:
     logger.info("Fetching %s", source.url)
-    if source.browser is not None:
-        return _fetch_browser_page(source)
     with httpx.Client(follow_redirects=True, timeout=30.0, trust_env=False) as client:
         resp = client.get(source.url, headers=source.headers)
         resp.raise_for_status()
     logger.info("Fetched %s — %d bytes", source.url, len(resp.text))
     return resp.text
-
-
-def _fetch_browser_page(source: SourceConfig) -> str:
-    try:
-        from patchright.sync_api import sync_playwright
-    except ImportError as error:
-        raise RuntimeError("Browser sources require 'uv sync --extra browser'") from error
-
-    settings = source.browser
-    assert settings is not None
-    with sync_playwright() as playwright:
-        context = playwright.chromium.launch_persistent_context(
-            user_data_dir=str(settings.profile_dir),
-            channel="chrome",
-            headless=settings.headless,
-            no_viewport=True,
-            timeout=settings.timeout_ms,
-        )
-        try:
-            page = context.pages[0] if context.pages else context.new_page()
-            response = page.goto(
-                source.url, wait_until="domcontentloaded", timeout=settings.timeout_ms
-            )
-            logger.info("Browser initial status: %s", response.status if response else None)
-            page.locator(settings.wait_for).first.wait_for(
-                state="attached", timeout=settings.timeout_ms
-            )
-            html = page.content()
-            logger.info("Browser fetched %s - %d characters", page.url, len(html))
-            return html
-        finally:
-            context.close()
 
 
 def _select_elements(container: Tag, css: str | None, xpath: str | None) -> list[Tag]:

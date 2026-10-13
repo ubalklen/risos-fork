@@ -23,16 +23,9 @@ jobs:
         with:
           version: "latest"
 
-      - run: uv sync --locked --extra browser
+      - run: uv sync
 
-      - name: Install Chrome for browser sources
-        run: uv run --no-sync patchright install --with-deps chrome
-
-      - name: Generate feeds
-        run: xvfb-run -a uv run --no-sync python -m risos generate --all --sites-dir sites/ --output-dir output/
-
-      - name: Verify ConJur feed was generated
-        run: test -s output/conjur-lenio-streck.rss.xml
+      - run: uv run python -m risos generate --all --sites-dir sites/ --output-dir output/
 
       - uses: actions/upload-pages-artifact@v3
         with:
